@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liantai.mapper.TodoMapper">
+
+    <resultMap id="resultMap" type="com.liantai.domain.TodoEntity">
+        <id property="id" column="id"/>
+        <result property="todo" column="todo"/>
+        <result property="completed" column="completed"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="columns">
+        id,todo,completed,create_time,update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO t_todo(todo, completed)
+        VALUES (#{todo}, #{completed})
+    </insert>
+
+    <update id="complete">
+        UPDATE t_todo set completed = 1
+        where id in
+        <foreach collection="todoIdList" open="(" item="todoId" separator="," close=")">
+            #{todoId}
+        </foreach>
+    </update>
+
+    <update id="editTodo">
+        UPDATE t_todo set todo = #{todo}
+        where id = #{todoId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM t_todo where id in
+        <foreach collection="todoIdList" open="(" item="todoId" separator="," close=")">
+            #{todoId}
+        </foreach>
+    </delete>
+
+</mapper>

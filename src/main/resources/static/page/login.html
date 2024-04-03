@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="../resources/layui-v2.6.8/layui/css/layui.css">
+</head>
+<script src="../resources/vue/vue.min.2.7.15.js"></script>
+<script src="../resources/axios/axios.min.1.6.1.js"></script>
+<style>
+    #changeCaptchaCodeSpan:hover {
+        color: dodgerblue;
+    }
+</style>
+<body>
+<div id="app" style="margin: 0 auto;width: 500px;margin-top: 30px;" class="layui-form">
+    <!--用户名-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户名：</label>
+        <div class="layui-input-block">
+            <input id="userNameInput" type="text" name="userNameInput"
+                   required lay-verify="required" placeholder="请输入用户名"
+                   autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <!--密码-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">密&nbsp;&nbsp;&nbsp;码：</label>
+        <div class="layui-input-block">
+            <input id="passwordInput" type="text" name="passwordInput"
+                   required lay-verify="required" placeholder="请输入密码"
+                   autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <!--记住我-->
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <input type="checkbox" id="rememberMeCheckbox" name="" title="记住我" lay-skin="primary">
+            <input type="checkbox" id="autoRegister" name="" title="自动注册" lay-skin="primary">
+            <button type="button" class="layui-btn" onclick="login()">登录</button>
+        </div>
+    </div>
+</div>
+<script src="../resources/layui-v2.6.8/layui/layui.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            username: 'Hello Vue!'
+        }
+    });
+    var layer
+    layui.use('layer', function () {
+        layer = layui.layer;
+    });
+    init();
+
+    function init() {
+        var username = getCookie("username");
+        var password = getCookie("password");
+
+        if (username) {
+            document.getElementById("userNameInput").value = username;
+            document.getElementById("rememberMeCheckbox").checked = true;
+        }
+
+        if (password) {
+            document.getElementById("passwordInput").value = password;
+            document.getElementById("rememberMeCheckbox").checked = true;
+        }
+    }
+
+    function login() {
+        var userName = document.getElementById("userNameInput").value;
+        var password = document.getElementById("passwordInput").value;
+        var isRememberMe = document.getElementById("rememberMeCheckbox").checked;
+        var autoRegister = document.getElementById("autoRegister").checked;
+
+        var data = {"userName": userName, "password": password, "rememberMe": isRememberMe, "autoRegister"：autoRegister
+    }
+        ;
+
+        axios({
+            url: "/user/login",
+            method: "POST",
+            headers: {"content-type": "application/json"},
+            data: data
+        }).then(function (resp) {
+            console.log(resp);
+            var result = resp.data;
+            if (result.code !== "0000") {
+                layer.open({
+                    content: result.msg
+                });
+                if (result.code === "-123") {
+                    changeCaptchaCode();
+                }
+            } else {
+                layer.open({
+                    content: "登录成功!!!"
+                });
+                changeCaptchaCode();
+            }
+        }).catch(function (error) {
+            console.error(error);
+        });
+    }
+</script>
+</body>
+</html>

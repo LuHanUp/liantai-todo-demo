@@ -1,0 +1,16 @@
+server:
+  port: 8888
+
+spring:
+  web:
+    resources:
+      static-locations: classpath:/static/page/, classpath:/static/,classpath:/templates/
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/powernode
+    username: root
+    password: root
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.liantai.domain
